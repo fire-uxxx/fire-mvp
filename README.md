@@ -1,4 +1,4 @@
-Below is an updated README that includes all of your checklist items, a rationale, and links to your main site. You can copy–paste this into your repository’s README.md:
+
 
 FIReMVP
 
