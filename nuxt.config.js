@@ -1,12 +1,13 @@
 import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({
-  ssr: true, // Ensure SSR is enabled
+  // ✅ Enable SSR for SEO & better caching
+  ssr: true,
 
   nitro: {
     preset: 'firebase',
     firebase: {
-      gen: 2 // Generation 2
+      gen: 2 // ✅ Using Firebase Gen 2 Functions
     },
     devServer:
       process.env.NODE_ENV === 'development'
@@ -22,23 +23,25 @@ export default defineNuxtConfig({
         : {}
   },
 
-  devtools: { enabled: true }, // Enable Nuxt devtools for debugging
+  // ✅ Enable Nuxt DevTools
+  devtools: { enabled: true },
 
   modules: ['@nuxt/ui', '@nuxt/eslint', 'nuxt-vuefire', '@vite-pwa/nuxt'],
 
   css: ['~/assets/css/main.css', '~/assets/design-system/main.scss'],
 
+  // ✅ Shared Firebase plugin
   plugins: ['./plugins/firebase.client.js'],
 
   vite: {
     build: {
-      sourcemap: false // Disable all sourcemaps
+      sourcemap: false // ✅ Disable sourcemaps for better performance
     }
   },
 
   runtimeConfig: {
     public: {
-      // Firebase environment variables
+      // ✅ Firebase Credentials (Loaded from .env)
       FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
       FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
       FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
@@ -46,20 +49,20 @@ export default defineNuxtConfig({
       FIREBASE_MESSAGING_SENDER_ID: process.env.FIREBASE_MESSAGING_SENDER_ID,
       FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
       FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
-      FRONTEND_URL: process.env.FRONTEND_URL, // e.g. "https://fireux-mvp.web.app"
-      PWA_APP_NAME: process.env.PWA_APP_NAME || 'Fire Mvp',
-      PWA_APP_SHORT_NAME: process.env.PWA_APP_SHORT_NAME || 'fire',
-      PWA_THEME_COLOR: process.env.PWA_THEME_COLOR || '#6C5CE7',
-      PWA_BACKGROUND_COLOR: process.env.PWA_BACKGROUND_COLOR || '#ffffff'
+
+      // ✅ PWA Metadata for FIReMVP
+      DOMAIN: process.env.DOMAIN || 'https://fireux-mvp.web.app',
+      PWA_APP_NAME: process.env.PWA_APP_NAME || 'FIReMVP',
+      PWA_APP_SHORT_NAME: process.env.PWA_APP_SHORT_NAME || 'FIReMVP',
+      PWA_THEME_COLOR: process.env.PWA_THEME_COLOR || '#FACC15',
+      PWA_BACKGROUND_COLOR: process.env.PWA_BACKGROUND_COLOR || '#FAFAFA',
+
+      // ✅ Stripe Public Key (safe to expose)
+      STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY
     },
+    // ✅ Stripe Secret Key (kept private)
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY
   },
-
-  future: {
-    compatibilityVersion: 4
-  },
-
-  compatibilityDate: '2024-11-27',
 
   vuefire: {
     config: {
@@ -71,51 +74,44 @@ export default defineNuxtConfig({
       appId: process.env.FIREBASE_APP_ID
     },
     auth: {
-      enabled: true, // Enable Firebase Auth
+      enabled: true,
       sessionCookies: true
     }
   },
 
   imports: {
-    dirs: ['~/composables/**']
+    dirs: ['composables/**/**', 'components/**/**']
   },
 
   pwa: {
     registerType: 'autoUpdate',
-
-    // Basic Manifest
     manifest: {
-      name: process.env.PWA_APP_NAME,
-      short_name: process.env.PWA_APP_SHORT_NAME,
+      name: process.env.PWA_APP_NAME || 'FIReMVP',
+      short_name: process.env.PWA_APP_SHORT_NAME || 'FIReMVP',
       start_url: '/',
       display: 'standalone',
-      theme_color: process.env.PWA_THEME_COLOR,
-      background_color: process.env.PWA_BACKGROUND_COLOR,
+      theme_color: process.env.PWA_THEME_COLOR || '#FACC15',
+      background_color: process.env.PWA_BACKGROUND_COLOR || '#FAFAFA',
       icons: [
         { src: '/icon-192x192.png', sizes: '192x192', type: 'image/png' },
         { src: '/icon-512x512.png', sizes: '512x512', type: 'image/png' }
       ]
     },
-
-    injectManifest: {
-      injectionPoint: undefined, // Prevents injection warnings
-      globPatterns: ['**/*.{js,css,html,png,svg,ico}']
-    },
-
-    // Minimal Workbox config for production
     workbox: {
       navigateFallback: '/',
       cleanupOutdatedCaches: true,
       clientsClaim: true,
       skipWaiting: true
     },
-
-    // Disable PWA in development mode and suppress warnings
     devOptions: {
-      enabled: false,
+      enabled: process.env.NODE_ENV === 'development',
       suppressWarnings: true,
       navigateFallbackAllowlist: [/^\/$/],
       type: 'module'
     }
-  }
+  },
+  future: {
+    compatibilityVersion: 4
+  },
+  compatibilityDate: '2025-03-17'
 })
